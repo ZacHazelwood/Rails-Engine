@@ -114,15 +114,19 @@ RSpec.describe 'Items API requests' do
 
     expect(item[:attributes]).to have_key(:name)
     expect(item[:attributes][:name]).to be_a String
+    expect(item[:attributes][:name]).to eq("Box fan")
 
     expect(item[:attributes]).to have_key(:description)
     expect(item[:attributes][:description]).to be_a String
+    expect(item[:attributes][:description]).to eq("It's not actually a box.")
 
     expect(item[:attributes]).to have_key(:unit_price)
     expect(item[:attributes][:unit_price]).to be_a Float
+    expect(item[:attributes][:unit_price]).to eq(19.99)
 
     expect(item[:attributes]).to have_key(:merchant_id)
     expect(item[:attributes][:merchant_id]).to be_a Integer
+    expect(item[:attributes][:merchant_id]).to eq(merchant.id)
   end
 
   it "updates an item request" do
