@@ -77,7 +77,11 @@ RSpec.describe 'Items API requests' do
     item = create(:item, merchant_id: merchant.id, id: 1)
 
     get "/api/v1/items/2"
+    response_body = JSON.parse(response.body, symbolize_names: true)
 
     expect(response.status).to eq(404)
+    expect(response.code).to eq("404")
+    expect(response.message).to eq("Not Found")
+    expect(response_body[:message]).to eq("Item not found")
   end
 end
