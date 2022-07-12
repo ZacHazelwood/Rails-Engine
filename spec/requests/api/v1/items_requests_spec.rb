@@ -57,7 +57,7 @@ RSpec.describe 'Items API requests' do
     expect(item[:id]).to be_a String
 
     expect(item).to have_key(:attributes)
-    expect(item[:id]).to be_a Hash
+    expect(item[:attributes]).to be_a Hash
 
     expect(item[:attributes]).to have_key(:name)
     expect(item[:attributes][:name]).to be_a String
