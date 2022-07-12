@@ -124,4 +124,49 @@ RSpec.describe 'Items API requests' do
     expect(item[:attributes]).to have_key(:merchant_id)
     expect(item[:attributes][:merchant_id]).to be_a Integer
   end
+
+  it "updates an item request" do
+    merchant_1 = create(:merchant)
+    merchant_2 = create(:merchant)
+    item = create(:item, merchant_id: merchant_1.id)
+
+    item_params = { name: "Box fan",
+                    description: "It's not actually a box.",
+                    unit_price: 19.99,
+                    merchant_id: merchant_2.id
+                  } # Updating merchant_id
+    headers = { "CONTENT_TYPE" => "application/json" }
+
+    patch "/api/v1/items/#{item.id}", headers: headers, params: JSON.parse(item_params)
+
+    esponse_body = JSON.parse(response.body, symbolize_names: true)
+    item = response_body[:data]
+
+    expect(response).to be_successful
+    expect(response.status).to eq(204)
+    expect(item).to be_a Hash
+
+    expect(item).to have_key(:id)
+    expect(item[:id]).to be_a String
+
+    expect(item).to have_key(:type)
+    expect(item[:id]).to be_a String
+
+    expect(item).to have_key(:attributes)
+    expect(item[:attributes]).to be_a Hash
+
+    expect(item[:attributes]).to have_key(:name)
+    expect(item[:attributes][:name]).to be_a String
+
+    expect(item[:attributes]).to have_key(:description)
+    expect(item[:attributes][:description]).to be_a String
+
+    expect(item[:attributes]).to have_key(:unit_price)
+    expect(item[:attributes][:unit_price]).to be_a Float
+
+    expect(item[:attributes]).to have_key(:merchant_id)
+    expect(item[:attributes][:merchant_id]).to be_a Integer
+    expect(item[:attributes][:merchant_id]).to eq(merchant_2.id)
+    expect(item[:attributes][:merchant_id]).to_not eq(merchant_1.id)
+  end
 end
