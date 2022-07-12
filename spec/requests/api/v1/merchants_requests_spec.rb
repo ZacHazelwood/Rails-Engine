@@ -47,4 +47,12 @@ RSpec.describe 'Merchants API requests' do
     expect(merchant[:attributes]).to have_key(:name)
     expect(merchant[:attributes][:name]).to be_a String
   end
+
+  it "sends an error if a merchant is not found" do
+    merchant = create(:merchant, id: 5)
+
+    get "/api/v1/merchants/6"
+
+    expect(response.status).to eq(404)
+  end
 end
