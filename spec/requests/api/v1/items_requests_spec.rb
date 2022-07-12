@@ -100,6 +100,7 @@ RSpec.describe 'Items API requests' do
     item = response_body[:data]
 
     expect(response).to be_successful
+    expect(response.status).to eq(201)
     expect(item).to be_a Hash
 
     expect(item).to have_key(:id)
