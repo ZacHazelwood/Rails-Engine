@@ -75,6 +75,6 @@ RSpec.describe 'Merchant Search Requests' do
     expect(response.status).to eq(400)
 
     get '/api/v1/merchants/find_all?name=nintendo'
-    expect(response.status).to eq(400)
+    expect(response.status).to eq(200) # Returns an empty Array
   end
 end
