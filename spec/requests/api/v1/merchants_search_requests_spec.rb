@@ -54,6 +54,27 @@ RSpec.describe 'Merchant Search Requests' do
   end
 
   it "sends errors if query not assigned or no object exists" do
+    merchant_1 = create(:merchant, name: 'Turing')
+    merchant_2 = create(:merchant, name: 'Ring World')
+    merchant_3 = create(:merchant, name: 'Ring LLC')
+    merchant_4 = create(:merchant, name: "Walgreens")
 
+    get '/api/v1/merchants/find'
+    expect(response.status).to eq(400)
+
+    get '/api/v1/merchants/find?name='
+    expect(response.status).to eq(400)
+
+    get '/api/v1/merchants/find?name=nintendo'
+    expect(response.status).to eq(400)
+
+    get '/api/v1/merchants/find_all'
+    expect(response.status).to eq(400)
+
+    get '/api/v1/merchants/find_all?name='
+    expect(response.status).to eq(400)
+
+    get '/api/v1/merchants/find_all?name=nintendo'
+    expect(response.status).to eq(400)
   end
 end
