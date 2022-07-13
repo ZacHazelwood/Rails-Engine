@@ -94,7 +94,7 @@ RSpec.describe 'Items API requests' do
                   }
     headers = { "CONTENT_TYPE" => "application/json" }
 
-    post "/api/v1/items", headers: headers, params: JSON(item_params)
+    post "/api/v1/items", headers: headers, params: JSON.generate(item_params)
 
     response_body = JSON.parse(response.body, symbolize_names: true)
     item = response_body[:data]
@@ -131,23 +131,35 @@ RSpec.describe 'Items API requests' do
 
   it "updates an item request" do
     merchant_1 = create(:merchant)
-    merchant_2 = create(:merchant)
-    item = create(:item, merchant_id: merchant_1.id)
-
     item_params = { name: "Box fan",
                     description: "It's not actually a box.",
                     unit_price: 19.99,
-                    merchant_id: merchant_2.id
-                  } # Updating merchant_id
+                    merchant_id: merchant_1.id
+                  }
     headers = { "CONTENT_TYPE" => "application/json" }
 
-    patch "/api/v1/items/#{item.id}", headers: headers, params: JSON.parse(item_params)
+    post "/api/v1/items", headers: headers, params: JSON.generate(item_params)
 
-    esponse_body = JSON.parse(response.body, symbolize_names: true)
+    expect(response).to be_successful
+    expect(response.status).to eq(201)
+
+    merchant_2 = create(:merchant)
+    item = Item.last
+
+    update_item_params = { name: "Box fan",
+                    description: "Okay, it's kind of a box.",
+                    unit_price: 19.99,
+                    merchant_id: merchant_2.id
+                  } # Updating description and merchant_id
+    headers = { "CONTENT_TYPE" => "application/json" }
+
+    patch "/api/v1/items/#{item.id}", headers: headers, params: JSON.generate(item: update_item_params)
+
+    response_body = JSON.parse(response.body, symbolize_names: true)
     item = response_body[:data]
 
     expect(response).to be_successful
-    expect(response.status).to eq(204)
+    expect(response.status).to eq(200)
     expect(item).to be_a Hash
 
     expect(item).to have_key(:id)
@@ -172,5 +184,16 @@ RSpec.describe 'Items API requests' do
     expect(item[:attributes][:merchant_id]).to be_a Integer
     expect(item[:attributes][:merchant_id]).to eq(merchant_2.id)
     expect(item[:attributes][:merchant_id]).to_not eq(merchant_1.id)
+  end
+
+  it "responds 404 if a merchant is not found when updating an item" do
+    merchant = create(:merchant, id: 2)
+    item = create(:item, merchant_id: merchant.id, id: 2)
+
+    get "/api/v1/items/3"
+
+    expect(response.status).to eq(404)
+    expect(response.code).to eq("404")
+    expect(response.message).to eq("Not Found")
   end
 end
