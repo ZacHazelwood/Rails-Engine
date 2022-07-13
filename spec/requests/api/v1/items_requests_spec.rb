@@ -239,6 +239,6 @@ RSpec.describe 'Items API requests' do
     delete "/api/v1/items/#{item_1.id}"
 
     expect(Invoice.all.count).to eq(1)
-    expect(invoice_1.exists?).to eq(false)
+    expect(Invoice.all.include?(invoice_1)).to eq(false)
   end
 end
