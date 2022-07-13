@@ -186,7 +186,7 @@ RSpec.describe 'Items API requests' do
     expect(item[:attributes][:merchant_id]).to_not eq(merchant_1.id)
   end
 
-  it "responds 404 if a merchant is not found when updating an item" do
+  it "responds 404 if merchant or item is not found when updating an item" do
     merchant = create(:merchant, id: 2)
     item = create(:item, merchant_id: merchant.id, id: 2)
 
@@ -204,6 +204,71 @@ RSpec.describe 'Items API requests' do
     headers = { "CONTENT_TYPE" => "application/json" }
 
     patch "/api/v1/items/#{item.id}", headers: headers, params: JSON.generate(item: update_item_params)
+
+    expect(response.status).to eq(404)
+    expect(response.code).to eq("404")
+    expect(response.message).to eq("Not Found")
+  end
+
+  it "sends a request to destroy an item" do
+    merchant = create(:merchant)
+    item = create(:item, merchant_id: merchant.id)
+
+    delete "/api/v1/items/#{item.id}"
+
+    expect(response.status).to eq(204)
+    expect(response.body).to eq("")
+  end
+
+  it "destroys any invoice if this was the only item on an invoice" do
+    merchant = create(:merchant)
+    customer = Customer.create!(first_name: "Jerry", last_name: "Springer")
+    item_1 = create(:item, merchant_id: merchant.id)
+    item_2 = create(:item, merchant_id: merchant.id)
+
+    invoice_1 = Invoice.create!(customer_id: customer.id, merchant_id: merchant.id, status: 'in progress')
+    invoice_2 = Invoice.create!(customer_id: customer.id, merchant_id: merchant.id, status: 'in progress')
+
+    invoice_item_1 = InvoiceItem.create!(item_id: item_1.id, invoice_id: invoice_1.id, quantity: 10, unit_price: item_1.unit_price)
+    invoice_item_2 = InvoiceItem.create!(item_id: item_1.id, invoice_id: invoice_2.id, quantity: 10, unit_price: item_1.unit_price)
+    invoice_item_3 = InvoiceItem.create!(item_id: item_2.id, invoice_id: invoice_2.id, quantity: 10, unit_price: item_2.unit_price)
+
+    expect(Invoice.all.count).to eq(2)
+    expect(Invoice.all.include?(invoice_1)).to eq(true)
+
+    delete "/api/v1/items/#{item_1.id}"
+
+    expect(Invoice.all.count).to eq(1)
+    expect(Invoice.all.include?(invoice_1)).to eq(false)
+  end
+
+  it "sends a request to get the merchant from an item" do
+    merchant_1 = create(:merchant)
+    merchant_2 = create(:merchant)
+    item = create(:item, merchant_id: merchant_1.id)
+
+    get "/api/v1/items/#{item.id}/merchant"
+    response_body = JSON.parse(response.body, symbolize_names: true)
+
+    merchant = response_body[:data]
+
+    expect(response).to be_successful
+    expect(merchant).to have_key(:id)
+    expect(merchant[:id]).to eq(merchant_1.id.to_s)
+
+    expect(merchant).to have_key(:type)
+    expect(merchant[:type]).to eq('merchant')
+
+    expect(merchant).to have_key(:attributes)
+    expect(merchant[:attributes]).to have_key(:name)
+    expect(merchant[:attributes][:name]).to eq(merchant_1.name)
+  end
+
+  it "sends an error 404 if merchant is not found" do
+    merchant = create(:merchant)
+    item = create(:item, merchant_id: merchant.id)
+
+    get "api/v1/items/#{item.id}/merchant"
 
     expect(response.status).to eq(404)
     expect(response.code).to eq("404")
