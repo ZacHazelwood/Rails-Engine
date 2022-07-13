@@ -195,5 +195,18 @@ RSpec.describe 'Items API requests' do
     expect(response.status).to eq(404)
     expect(response.code).to eq("404")
     expect(response.message).to eq("Not Found")
+
+    update_item_params = { name: "Box fan",
+                    description: "Okay, it's kind of a box.",
+                    unit_price: 19.99,
+                    merchant_id: 1
+                  } # wrong merchant
+    headers = { "CONTENT_TYPE" => "application/json" }
+
+    patch "/api/v1/items/#{item.id}", headers: headers, params: JSON.generate(item: update_item_params)
+
+    expect(response.status).to eq(404)
+    expect(response.code).to eq("404")
+    expect(response.message).to eq("Not Found")
   end
 end
