@@ -253,6 +253,7 @@ RSpec.describe 'Items API requests' do
     merchant = response_body[:data]
 
     expect(response).to be_successful
+    expect(response.status).to eq(200)
     expect(merchant).to have_key(:id)
     expect(merchant[:id]).to eq(merchant_1.id.to_s)
 
