@@ -35,7 +35,7 @@ RSpec.describe Invoice, type: :model do
 
       expect(Invoice.find_item_by_id(item_1.id)).to eq([invoice_1, invoice_2])
       expect(Invoice.find_item_by_id(item_2.id)).to eq([invoice_2])
-      expect(Invoice.find_item_by_id(item_3.id)).to eq(nil)
+      expect(Invoice.find_item_by_id(item_3.id)).to eq([])
     end
   end
 end
