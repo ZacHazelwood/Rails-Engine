@@ -52,8 +52,12 @@ RSpec.describe 'Merchants API requests' do
     merchant = create(:merchant, id: 5)
 
     get "/api/v1/merchants/6"
+    response_body = JSON.parse(response.body, symbolize_names: true)
 
     expect(response.status).to eq(404)
+    expect(response.code).to eq("404")
+    expect(response.message).to eq("Not Found")
+    expect(response_body[:message]).to eq("Merchant not found")
   end
 
   it "sends a list of items belonging to a merchant" do
