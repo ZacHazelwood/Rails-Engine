@@ -219,4 +219,26 @@ RSpec.describe 'Items API requests' do
     expect(response.status).to eq(204)
     expect(response.body).to eq("")
   end
+
+  it "destroys any invoice if this was the only item on an invoice" do
+    merchant = create(:merchant)
+    customer = Customer.create!(first_name: "Jerry", last_name: "Springer")
+    item_1 = create(:item, merchant_id: merchant.id)
+    item_2 = create(:item, merchant_id: merchant.id)
+
+    invoice_1 = Invoice.create!(customer_id: customer.id, merchant_id: merchant.id, status: 'in progress')
+    invoice_2 = Invoice.create!(customer_id: customer.id, merchant_id: merchant.id, status: 'in progress')
+
+    invoice_item_1 = InvoiceItem.create!(item_id: item_1.id, invoice_id: invoice_1.id, quantity: 10, unit_price: item_1.unit_price)
+    invoice_item_2 = InvoiceItem.create!(item_id: item_1.id, invoice_id: invoice_2.id, quantity: 10, unit_price: item_1.unit_price)
+    invoice_item_3 = InvoiceItem.create!(item_id: item_2.id, invoice_id: invoice_2.id, quantity: 10, unit_price: item_2.unit_price)
+
+    expect(Invoice.all.count).to eq(2)
+    expect(Invoice.all.include?(invoice_1)).to eq(true)
+
+    delete "/api/v1/items/#{item_1.id}"
+
+    expect(Invoice.all.count).to eq(1)
+    expect(invoice_1.exists?).to eq(false)
+  end
 end
