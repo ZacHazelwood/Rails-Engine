@@ -8,10 +8,10 @@ RSpec.describe 'Merchant Search Requests' do
     merchant_4 = create(:merchant, name: "Walgreens")
 
     get '/api/v1/merchants/find?name=ring'
-    require "pry"; binding.pry
 
     response_body = JSON.parse(response.body, symbolize_names: true)
     merchant = response_body[:data]
+    
     expect(response.status).to eq(200)
     expect(merchant).to be_a Hash
     expect(merchant).to have_key(:id)
