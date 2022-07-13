@@ -266,9 +266,9 @@ RSpec.describe 'Items API requests' do
 
   it "sends an error 404 if merchant is not found" do
     merchant = create(:merchant)
-    item = create(:item, merchant_id: merchant.id)
+    item = create(:item, merchant_id: merchant.id, id: 1)
 
-    get "api/v1/items/#{item.id}/merchant"
+    get "/api/v1/items/2/merchant"
 
     expect(response.status).to eq(404)
     expect(response.code).to eq("404")
