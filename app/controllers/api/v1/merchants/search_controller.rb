@@ -1,6 +1,8 @@
 class Api::V1::Merchants::SearchController < ApplicationController
 
   def index
+    merchants = Merchant.search_by_name(search_params[:name])
+    render json: MerchantSerializer.new(merchants), status: 200
   end
 
   def show
