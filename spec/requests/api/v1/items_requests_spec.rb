@@ -186,7 +186,7 @@ RSpec.describe 'Items API requests' do
     expect(item[:attributes][:merchant_id]).to_not eq(merchant_1.id)
   end
 
-  it "responds 404 if a merchant is not found when updating an item" do
+  it "responds 404 if merchant or item is not found when updating an item" do
     merchant = create(:merchant, id: 2)
     item = create(:item, merchant_id: merchant.id, id: 2)
 
@@ -208,5 +208,15 @@ RSpec.describe 'Items API requests' do
     expect(response.status).to eq(404)
     expect(response.code).to eq("404")
     expect(response.message).to eq("Not Found")
+  end
+
+  it "sends a request to destroy an item" do
+    merchant = create(:merchant)
+    item = create(:item, merchant_id: merchant.id)
+
+    delete "/api/v1/items/#{item.id}"
+
+    expect(response.status).to eq(204)
+    expect(response.body).to eq("")
   end
 end
