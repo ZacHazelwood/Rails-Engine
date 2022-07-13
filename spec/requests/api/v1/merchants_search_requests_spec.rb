@@ -11,7 +11,7 @@ RSpec.describe 'Merchant Search Requests' do
 
     response_body = JSON.parse(response.body, symbolize_names: true)
     merchant = response_body[:data]
-    
+
     expect(response.status).to eq(200)
     expect(merchant).to be_a Hash
     expect(merchant).to have_key(:id)
@@ -30,6 +30,27 @@ RSpec.describe 'Merchant Search Requests' do
     merchant_2 = create(:merchant, name: "Ring World")
     merchant_3 = create(:merchant, name: "Ring LLC")
     merchant_4 = create(:merchant, name: "Walgreens")
+
+    get '/api/v1/merchants/find_all?name=ring'
+
+    response_body = JSON.parse(response.body, symbolize_names: true)
+    merchants = response_body[:data]
+
+    expect(response.status).to eq(200)
+    expect(merchants).to be_a(Array)
+    expect(merchants.count).to eq(3)
+
+    merchants.each do |merchant|
+      expect(merchant).to have_key(:id)
+      expect(merchant[:id]).to be_a String
+
+      expect(merchant).to have_key(:type)
+      expect(merchant[:type]).to be_a String
+
+      expect(merchant).to have_key(:attributes)
+      expect(merchant[:attributes]).to have_key(:name)
+      expect(merchant[:attributes][:name]).to be_a String
+    end
   end
 
   it "sends errors if query not assigned or no object exists" do
