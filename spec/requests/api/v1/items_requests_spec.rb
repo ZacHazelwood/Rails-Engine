@@ -241,4 +241,38 @@ RSpec.describe 'Items API requests' do
     expect(Invoice.all.count).to eq(1)
     expect(Invoice.all.include?(invoice_1)).to eq(false)
   end
+
+  it "sends a request to get the merchant from an item" do
+    merchant_1 = create(:merchant)
+    merchant_2 = create(:merchant)
+    item = create(:item, merchant_id: merchant_1.id)
+
+    get "/api/v1/items/#{item.id}/merchant"
+    response_body = JSON.parse(response.body, symbolize_names: true)
+
+    merchant = response_body[:data]
+
+    expect(response).to be_successful
+    expect(response.status).to eq(200)
+    expect(merchant).to have_key(:id)
+    expect(merchant[:id]).to eq(merchant_1.id.to_s)
+
+    expect(merchant).to have_key(:type)
+    expect(merchant[:type]).to eq('merchant')
+
+    expect(merchant).to have_key(:attributes)
+    expect(merchant[:attributes]).to have_key(:name)
+    expect(merchant[:attributes][:name]).to eq(merchant_1.name)
+  end
+
+  it "sends an error 404 if merchant is not found" do
+    merchant = create(:merchant)
+    item = create(:item, merchant_id: merchant.id, id: 1)
+
+    get "/api/v1/items/2/merchant"
+
+    expect(response.status).to eq(404)
+    expect(response.code).to eq("404")
+    expect(response.message).to eq("Not Found")
+  end
 end

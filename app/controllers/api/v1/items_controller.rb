@@ -37,7 +37,7 @@ class Api::V1::ItemsController < ApplicationController
         invoice.destroy
       end
     end
-    item.destroy  
+    item.destroy
   end
 
   private
