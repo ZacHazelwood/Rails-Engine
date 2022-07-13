@@ -17,8 +17,20 @@ class Api::V1::ItemsController < ApplicationController
     render json: ItemSerializer.new(item_create), status: 201
   end
 
+  def update
+    item_update = Item.find_by_id(params[:id])
+    merchant = Merchant.find_by_id(item_params[:merchant_id])
+    if item_update && merchant || item_update && !item_params.include?(:merchant_id)
+      item_update.update(item_params)
+      item_update.save
+      render json: ItemSerializer.new(item_update), status: 200
+    else
+      render json: { status: "Not Found", code: 404 }, status: 404
+    end
+  end
+
   private
     def item_params
-      params.permit(:name, :description, :unit_price, :merchant_id)
+      params.require(:item).permit(:name, :description, :unit_price, :merchant_id)
     end
 end
