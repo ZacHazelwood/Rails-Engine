@@ -24,4 +24,8 @@ class Item < ApplicationRecord
   def self.search_min_price(min_price)
     where('unit_price >= ?', min_price).order(:name)
   end
+
+  def self.search_price_range(low, high)
+    where('unit_price between ? and ?', low, high).order(:name)
+  end
 end
