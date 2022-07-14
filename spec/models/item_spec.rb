@@ -16,4 +16,18 @@ RSpec.describe Item, type: :model do
     it { should validate_presence_of(:unit_price) }
     it { should validate_numericality_of(:unit_price) }
   end
+
+  describe 'class methods' do
+    it "#search_by_name" do
+      merchant = create(:merchant)
+      item_1 = create(:item, merchant_id: merchant.id, name: "Box fan")
+      item_2 = create(:item, merchant_id: merchant.id, name: "Boxing gloves")
+      item_3 = create(:item, merchant_id: merchant.id, name: "Wheelbarrow")
+      item_4 = create(:item, merchant_id: merchant.id, name: "Candy bar")
+
+      expect(Item.search_by_name('box')).to eq([item_2, item_1])
+      expect(Item.search_by_name('bar')).to eq([item_4, item_3])
+      expect(Item.search_by_name('fan')).to eq([item_1])
+    end
+  end
 end
