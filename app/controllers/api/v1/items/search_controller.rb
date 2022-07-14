@@ -7,7 +7,7 @@ class Api::V1::Items::SearchController < ApplicationController
         render json: ItemSerializer.new(items)
       end
     else
-      render json: { data: { message: "No match found" } }, status: 400
+      render json: { data: { error: 'error', message: "No match found" } }, status: 400
     end
   end
 
@@ -19,7 +19,7 @@ class Api::V1::Items::SearchController < ApplicationController
         item = Item.search_price_range(search_params[:min_price].to_f, search_params[:max_price].to_f).first
         render json: ItemSerializer.new(item)
       else
-        render json: { data: { message: "No match found" } }, status: 400
+        render json: ErrorSerializer.format_data_error, status: 400
       end
     # Search min price
     elsif search_params[:min_price].to_i > 0 && search_params.keys.count == 1
@@ -27,7 +27,7 @@ class Api::V1::Items::SearchController < ApplicationController
       if item
         render json: ItemSerializer.new(item)
       else
-        render json: { data: { message: "No match found" } }, status: 400
+        render json: ErrorSerializer.format_data_error, status: 400
       end
     # Search max price
     elsif search_params[:max_price].to_i > 0 && search_params.keys.count == 1
@@ -35,7 +35,7 @@ class Api::V1::Items::SearchController < ApplicationController
       if item
         render json: ItemSerializer.new(item)
       else
-        render json: { data: { message: "No match found" } }, status: 400
+        render json: ErrorSerializer.format_data_error, status: 400
       end
     # Search name
     elsif search_params.include?(:name) && search_params[:name].empty? == false && search_params.keys.count == 1
@@ -43,11 +43,11 @@ class Api::V1::Items::SearchController < ApplicationController
       if item
         render json: ItemSerializer.new(item)
       else
-        render json: { data: { message: "No match found" } }, status: 400
+        render json: ErrorSerializer.format_data_error, status: 400
       end
     # Cannot search name and price
     else
-      render json: { data: { message: "No match found" } }, status: 400
+      render json: ErrorSerializer.data_error_response, status: 400
     end
   end
 
