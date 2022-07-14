@@ -1,7 +1,14 @@
 class Api::V1::Items::SearchController < ApplicationController
 
   def index
-
+    if search_params.include?(:name) && !search_params[:name].empty?
+      items = Item.search_by_name(search_params[:name])
+      if items
+        render json: ItemSerializer.new(items)
+      end
+    else
+      render json: { data: { message: "No match found" } }, status: 400
+    end
   end
 
   def show
