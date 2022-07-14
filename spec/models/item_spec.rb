@@ -36,7 +36,16 @@ RSpec.describe Item, type: :model do
       item_2 = create(:item, merchant_id: merchant.id, name: "Boxing gloves", unit_price: 39.99)
       item_3 = create(:item, merchant_id: merchant.id, name: "Wheelbarrow", unit_price: 59.99)
 
-      expect(Item.search_max_price(20.00)).to eq([item_2, item_3])
+      expect(Item.search_max_price(20.00)).to eq([item_1])
+    end
+
+    it "#search_min_price" do
+      merchant = create(:merchant)
+      item_1 = create(:item, merchant_id: merchant.id, name: "Box fan", unit_price: 19.99)
+      item_2 = create(:item, merchant_id: merchant.id, name: "Boxing gloves", unit_price: 39.99)
+      item_3 = create(:item, merchant_id: merchant.id, name: "Wheelbarrow", unit_price: 59.99)
+
+      expect(Item.search_min_price(20.00)).to eq([item_2, item_3])
     end
   end
 end
