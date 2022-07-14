@@ -13,7 +13,7 @@ class Api::V1::Items::SearchController < ApplicationController
 
   def show
     # Search for price range
-    if search_params[:min_price].to_f > 0.0 && search_params[:max_price].to_f > 0.0 && search_params.keys.count == 2
+    if search_params[:min_price].to_i > 0 && search_params[:max_price].to_i > 0 && search_params.keys.count == 2
       # Ensures min is less than max
       if search_params[:min_price].to_f < search_params[:max_price].to_f
         item = Item.search_price_range(search_params[:min_price].to_f, search_params[:max_price].to_f).first
@@ -22,7 +22,7 @@ class Api::V1::Items::SearchController < ApplicationController
         render json: { data: { message: "No match found" } }, status: 400
       end
     # Search min price
-    elsif search_params[:min_price].to_f > 0.0 && search_params.keys.count == 1
+    elsif search_params[:min_price].to_i > 0 && search_params.keys.count == 1
       item = Item.search_min_price(search_params[:min_price].to_f).first
       if item
         render json: ItemSerializer.new(item)
@@ -30,7 +30,7 @@ class Api::V1::Items::SearchController < ApplicationController
         render json: { data: { message: "No match found" } }, status: 400
       end
     # Search max price
-    elsif search_params[:max_price].to_f > 0.0 && search_params.keys.count == 1
+    elsif search_params[:max_price].to_i > 0 && search_params.keys.count == 1
       item = Item.search_max_price(search_params[:max_price].to_f).first
       if item
         render json: ItemSerializer.new(item)
