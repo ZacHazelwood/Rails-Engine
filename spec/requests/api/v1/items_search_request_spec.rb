@@ -132,7 +132,7 @@ RSpec.describe "Item Search Requests" do
     expect(item[:attributes]).to be_a Hash
 
     expect(item[:attributes]).to have_key(:name)
-    expect(item[:attributes][:name]).to eq('Wheelbarrow')
+    expect(item[:attributes][:name]).to eq('Boxing gloves')
 
     expect(item[:attributes]).to have_key(:description)
     expect(item[:attributes][:description]).to be_a String
