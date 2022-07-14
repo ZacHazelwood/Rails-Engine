@@ -16,4 +16,46 @@ RSpec.describe Item, type: :model do
     it { should validate_presence_of(:unit_price) }
     it { should validate_numericality_of(:unit_price) }
   end
+
+  describe 'class methods' do
+    it "#search_by_name" do
+      merchant = create(:merchant)
+      item_1 = create(:item, merchant_id: merchant.id, name: "Box fan")
+      item_2 = create(:item, merchant_id: merchant.id, name: "Boxing gloves")
+      item_3 = create(:item, merchant_id: merchant.id, name: "Wheelbarrow")
+      item_4 = create(:item, merchant_id: merchant.id, name: "Candy bar")
+
+      expect(Item.search_by_name('box')).to eq([item_1, item_2])
+      expect(Item.search_by_name('bar')).to eq([item_4, item_3])
+      expect(Item.search_by_name('fan')).to eq([item_1])
+    end
+
+    it "#search_max_price" do
+      merchant = create(:merchant)
+      item_1 = create(:item, merchant_id: merchant.id, name: "Box fan", unit_price: 19.99)
+      item_2 = create(:item, merchant_id: merchant.id, name: "Boxing gloves", unit_price: 39.99)
+      item_3 = create(:item, merchant_id: merchant.id, name: "Wheelbarrow", unit_price: 59.99)
+
+      expect(Item.search_max_price(20.00)).to eq([item_1])
+    end
+
+    it "#search_min_price" do
+      merchant = create(:merchant)
+      item_1 = create(:item, merchant_id: merchant.id, name: "Box fan", unit_price: 19.99)
+      item_2 = create(:item, merchant_id: merchant.id, name: "Boxing gloves", unit_price: 39.99)
+      item_3 = create(:item, merchant_id: merchant.id, name: "Wheelbarrow", unit_price: 59.99)
+
+      expect(Item.search_min_price(20.00)).to eq([item_2, item_3])
+    end
+
+    it "#search_price_range" do
+      merchant = create(:merchant)
+      item_1 = create(:item, merchant_id: merchant.id, name: "Box fan", unit_price: 19.99)
+      item_2 = create(:item, merchant_id: merchant.id, name: "Boxing gloves", unit_price: 39.99)
+      item_3 = create(:item, merchant_id: merchant.id, name: "Wheelbarrow", unit_price: 59.99)
+      item_4 = create(:item, merchant_id: merchant.id, name: "Candy bar", unit_price: 1.49)
+
+      expect(Item.search_price_range(15, 40)).to eq([item_1, item_2])
+    end
+  end
 end

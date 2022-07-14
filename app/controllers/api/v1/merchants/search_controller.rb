@@ -5,8 +5,6 @@ class Api::V1::Merchants::SearchController < ApplicationController
       merchants = Merchant.search_by_name(search_params[:name])
       if merchants
         render json: MerchantSerializer.new(merchants)
-      # else
-      #   render json: { data: { message: "No match found" } }, status: 400
       end
     else
       render json: { data: { message: "No match found" } }, status: 400
