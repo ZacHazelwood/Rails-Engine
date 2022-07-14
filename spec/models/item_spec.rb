@@ -25,7 +25,7 @@ RSpec.describe Item, type: :model do
       item_3 = create(:item, merchant_id: merchant.id, name: "Wheelbarrow")
       item_4 = create(:item, merchant_id: merchant.id, name: "Candy bar")
 
-      expect(Item.search_by_name('box')).to eq([item_2, item_1])
+      expect(Item.search_by_name('box')).to eq([item_1, item_2])
       expect(Item.search_by_name('bar')).to eq([item_4, item_3])
       expect(Item.search_by_name('fan')).to eq([item_1])
     end
