@@ -47,5 +47,15 @@ RSpec.describe Item, type: :model do
 
       expect(Item.search_min_price(20.00)).to eq([item_2, item_3])
     end
+
+    it "#search_price_range" do
+      merchant = create(:merchant)
+      item_1 = create(:item, merchant_id: merchant.id, name: "Box fan", unit_price: 19.99)
+      item_2 = create(:item, merchant_id: merchant.id, name: "Boxing gloves", unit_price: 39.99)
+      item_3 = create(:item, merchant_id: merchant.id, name: "Wheelbarrow", unit_price: 59.99)
+      item_4 = create(:item, merchant_id: merchant.id, name: "Candy bar", unit_price: 1.49)
+
+      expect(Item.search_price_range(15, 40)).to eq([item_1, item_2])
+    end
   end
 end
